@@ -1,9 +1,11 @@
 from django.urls import include, path
-from rest_framework import routers
-from .views import UserViewSet, GroupViewSet, ImageViewSet
-
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework import routers
+
+from .views import UserViewSet, GroupViewSet, ImageViewSet
+
+
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)

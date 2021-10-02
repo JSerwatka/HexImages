@@ -1,12 +1,18 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+
 from .validators import positive_int_list_validator
+
 
 def img_path(instance, filename):
     return f'images/{filename}'
 
 #TODO add plan to User
+class User(AbstractUser):
+    pass
+
 
 class Image(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='images')
@@ -29,3 +35,10 @@ class Plan(models.Model):
     )
     original_exists = models.BooleanField(_('allow original image access'), default=False)
     expiring_exists = models.BooleanField(_('allow to generate expiring links'), default=False)
+
+
+class Customer(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.PROTECT)
+
+

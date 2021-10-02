@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from .serializers import UserSerializer, GroupSerializer, ImageSerializer
 
-from .models import Images
+from .models import Image
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -33,7 +33,7 @@ class ImageViewSet(viewsets.ModelViewSet):
     #     return response
 
     def get_queryset(self):
-        return Images.objects.filter(owner=self.request.user)
+        return Image.objects.filter(owner=self.request.user)
 
     # TODO remove in production
     def perform_create(self, serializer):

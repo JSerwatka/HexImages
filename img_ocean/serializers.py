@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import Images
+from .models import Image
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -23,5 +23,5 @@ class ImageSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField(default=serializers.CurrentUserDefault())
 
     class Meta:
-        model = Images
+        model = Image
         fields = ['owner', 'id', 'title', 'image']

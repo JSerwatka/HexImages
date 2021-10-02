@@ -8,7 +8,7 @@ from django.conf.urls.static import static
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'groups', GroupViewSet)
-router.register(r'images', ImageViewSet)
+router.register(r'images', ImageViewSet, basename='Image')
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

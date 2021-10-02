@@ -8,4 +8,4 @@ class ImageAdmin(admin.ModelAdmin):
 
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
-    list_display = ('title', 'img_heights', 'orignal_exists', 'expiring_exists')
+    list_display = ('title', 'img_heights', 'original_exists', 'expiring_exists')

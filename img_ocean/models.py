@@ -6,7 +6,8 @@ from .validators import positive_int_list_validator
 def img_path(instance, filename):
     return f'images/{filename}'
 
-# Create your models here.
+#TODO add plan to User
+
 class Image(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='images')
     title = models.TextField(_('title'), max_length=255)
@@ -18,6 +19,7 @@ class Image(models.Model):
         #TODO handle constrain validation with proper message
         unique_together = ['owner', 'title']
 
+
 class Plan(models.Model):
     title = models.TextField(_('plan title'), max_length=255)
     img_heights = models.CharField(
@@ -25,8 +27,5 @@ class Plan(models.Model):
         validators=[positive_int_list_validator(message=_('List must consist of comma separated positive integers'))], 
         max_length=255
     )
-    orignal_exists = models.BooleanField(_('allow original image access'), default=False)
+    original_exists = models.BooleanField(_('allow original image access'), default=False)
     expiring_exists = models.BooleanField(_('allow to generate expiring links'), default=False)
-
-
-    # MinValueValidator(1, _('image heights have to be > 0'))

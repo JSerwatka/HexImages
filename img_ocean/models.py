@@ -1,8 +1,7 @@
 from django.db import models
 from django.conf import settings
-from django.db.models.fields import TextField
 from django.utils.translation import gettext_lazy as _
-
+from .validators import positive_int_list_validator
 
 def img_path(instance, filename):
     return f'images/{filename}'
@@ -19,10 +18,15 @@ class Image(models.Model):
         #TODO handle constrain validation with proper message
         unique_together = ['owner', 'title']
 
+class Plan(models.Model):
+    title = models.TextField(_('plan title'), max_length=255)
+    img_heights = models.CharField(
+        _('image heights'), 
+        validators=[positive_int_list_validator(message=_('List must consist of comma separated positive integers'))], 
+        max_length=255
+    )
+    orignal_exists = models.BooleanField(_('allow original image access'), default=False)
+    expiring_exists = models.BooleanField(_('allow to generate expiring links'), default=False)
 
 
-# class Plan(models.Model):
-#     title = models.TextField(_('plan title'), max_length=255)
-#     img_height = models.IntegerField(_('image height'), min=1)
-#     orignal_exists = models.BooleanField(_('allow original image access'), default=False)
-#     expiring_exists = models.BooleanField(_('allow to generate expiring links'), default=False)
+    # MinValueValidator(1, _('image heights have to be > 0'))

@@ -20,6 +20,9 @@ class Image(models.Model):
     image = models.ImageField(_('original image'), upload_to=img_path)
     created = models.DateTimeField(_('upload datetime'), auto_now_add=True)
 
+    def __str__(self):
+        return self.title
+
     #TODO prevent filetypes different than PNG/JPG 
     class Meta:
         #TODO handle constrain validation with proper message
@@ -36,9 +39,13 @@ class Plan(models.Model):
     original_exists = models.BooleanField(_('allow original image access'), default=False)
     expiring_exists = models.BooleanField(_('allow to generate expiring links'), default=False)
 
+    def __str__(self):
+        return self.title
+
 
 class Customer(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     plan = models.ForeignKey(Plan, on_delete=models.PROTECT)
 
-
+    def __str__(self):
+        return f'with plan {self.plan}'

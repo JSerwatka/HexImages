@@ -16,10 +16,9 @@ class PlanAdmin(admin.ModelAdmin):
 
 class CustomerInline(admin.StackedInline):
     model = Customer
-    # can_delete = False
-    # verbose_name_plural = 'employee'
 
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     inlines = (CustomerInline,)
+    list_display = ('username', 'email', 'customer', 'is_staff')

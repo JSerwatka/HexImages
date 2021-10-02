@@ -23,10 +23,19 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 class ImageViewSet(viewsets.ModelViewSet):
-    queryset = Images.objects.all()
+    #TODO update user is not authenticated error msg
     serializer_class = ImageSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
+    # def list(self, request, *args, **kwargs):
+    #     response = super().list(request, *args, **kwargs)
+    #     print(response.data)
+    #     return response
+
+    def get_queryset(self):
+        return Images.objects.filter(owner=self.request.user)
+
+    # TODO remove in production
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 

@@ -1,9 +1,11 @@
 from django.http.response import HttpResponse
 from django.urls import path
 
-from .views import index
+from .views import resize
 
+
+app_name = 'resizer'
 
 urlpatterns = [
-    path('', index, name='index')
+    path('', resize, name='resize')
 ]

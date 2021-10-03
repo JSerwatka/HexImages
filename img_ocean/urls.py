@@ -12,6 +12,8 @@ router.register(r'users', UserViewSet)
 router.register(r'groups', GroupViewSet)
 router.register(r'images', ImageViewSet, basename='Image')
 
+app_name = 'img_ocean'
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

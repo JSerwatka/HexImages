@@ -4,7 +4,7 @@ from django.urls import path
 from .views import resize
 
 
-app_name = 'resizer'
+app_name = 'thumbnailer'
 
 urlpatterns = [
     path('', resize, name='resize')

@@ -12,7 +12,10 @@ router.register(r'users', UserViewSet)
 router.register(r'groups', GroupViewSet)
 router.register(r'images', ImageViewSet, basename='Image')
 
-app_name = 'img_ocean'
+#TODO when uncommented rest_framework auth doesnt work
+# app_name = 'img_ocean'
+
+#TODO rest_framework redire
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

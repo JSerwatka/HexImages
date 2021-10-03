@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'img_ocean', 
-    'resizer'
+    'thumbnailer'
 ]
 
 MIDDLEWARE = [
@@ -137,5 +137,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ]
 }
+LOGIN_REDIRECT_URL = '/'
 
 AUTH_USER_MODEL = 'img_ocean.User'

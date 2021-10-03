@@ -23,6 +23,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class ImageViewSet(viewsets.ModelViewSet):
     #TODO update user is not authenticated error msg
     serializer_class = ImageSerializer

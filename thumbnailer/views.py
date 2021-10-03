@@ -1,7 +1,7 @@
 import io
+
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render
-from urllib.request import urlopen
 from django.utils.datastructures import MultiValueDictKeyError
 
 import PIL.Image
@@ -13,11 +13,11 @@ def resize(request):
     # Make sure image id query parameter is correct
     try:
         #TODO change path to url
-        original_img_url = Image.objects.get(id=request.GET['id']).image.path
+        original_img_url = Image.objects.get(id=request.GET['id'], owner=request.user).image.path
     except MultiValueDictKeyError:
         return JsonResponse({'error': 'Incorrect URL parameters'})
     except Image.DoesNotExist:
-        return JsonResponse({'error': 'Image with this id does not exist'})
+        return JsonResponse({'error': 'Image with this id does not exist or you are not authorized to view it'})
     
     # Get customer's plan restriction
     customer_plan = request.user.customer.plan
@@ -35,7 +35,7 @@ def resize(request):
         try:    
             requested_height = int(request.GET['height'])
         except MultiValueDictKeyError:
-            return JsonResponse({'error': 'Incorrect URL parameters'})
+            return JsonResponse({'error': 'This plan does not support original images'})
 
         if requested_height not in available_heights:
             return JsonResponse({'error': 'This plan does not support provided image height'})

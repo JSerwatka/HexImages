@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group
-from rest_framework import serializers
 from django.urls import reverse
+from rest_framework import serializers
 
 from .models import Image, User
 

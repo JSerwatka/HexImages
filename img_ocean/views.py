@@ -43,3 +43,4 @@ class ImageViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(owner=self.request.user)
+    

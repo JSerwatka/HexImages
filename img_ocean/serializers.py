@@ -48,8 +48,8 @@ class ImageSerializer(serializers.ModelSerializer):
                 response_obj[f'image-{height}px'] = request.build_absolute_uri(resizer_url + query)
 
             if customer_plan.original_exists:
-                #TODO replace with thumbnailer url
-                response_obj[f'image-original'] = request.build_absolute_uri(image.image.url)
+                query = f'?id={image_id}'
+                response_obj[f'image-original'] = request.build_absolute_uri(resizer_url + query)
 
             if customer_plan.expiring_exists:
                 #TODO change to real url

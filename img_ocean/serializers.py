@@ -25,4 +25,5 @@ class ImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Image
+        #TODO rename image to original
         fields = ['owner', 'id', 'title', 'image']

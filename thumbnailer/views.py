@@ -1,14 +1,10 @@
-import io
+from datetime import datetime
 
 from django.http.response import HttpResponse, JsonResponse
-from django.shortcuts import render
-from django.utils.datastructures import MultiValueDictKeyError
 
-import PIL.Image
-
-from img_ocean.models import Image
+from img_ocean.models import ExpiringLink
 from .decorators import test_img_parameters
-from .utils import resize_img_to_height
+from .utils import generate_new_img
 
 
 @test_img_parameters
@@ -18,20 +14,29 @@ def resize(request):
     '''
 
 
-    original_img = resize.original_img
-    original_requested = resize.original_requested
-
-    # Get the img
-    output = io.BytesIO()
-    img = PIL.Image.open(original_img.image.path) #TODO change path to url
-    # Check format - JPG or PNG
-    format = img.format
-
-    if not original_requested:
+    new_img, format = generate_new_img(
+        original_img = resize.original_img,
+        original_requested = resize.original_requested,
         requested_height = resize.requested_height
-        img = resize_img_to_height(img, requested_height)
+    )
 
-    img.save(output, format)
-    output.seek(0)
+    return HttpResponse(new_img, content_type=f"image/{format.lower()}")
 
-    return HttpResponse(output, content_type=f"image/{format.lower()}")
+def expiring_link(request, uuid):
+    '''
+    #TODO docstring resize
+    '''
+
+
+    try:
+        link = ExpiringLink.objects.get(id=uuid, expires_on__gte=datetime.now())
+    except ExpiringLink.DoesNotExist:
+        return JsonResponse({'error': 'This link is invalid or expired'})
+
+    new_img, format = generate_new_img(
+        original_img = link.image,
+        original_requested = link.original_img,
+        requested_height = link.img_height
+    )
+
+    return HttpResponse(new_img, content_type=f"image/{format.lower()}")

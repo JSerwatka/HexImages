@@ -59,4 +59,4 @@ class ExpiringLink(models.Model):
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
     img_height = models.IntegerField(_('image height'), default=0)
     original_img = models.BooleanField(_('original image height?'), default=False)
-    expires_on = models.DateTimeField(_('expires on')) #TODO add expiration date
+    expires_on = models.DateTimeField(_('expires on'))

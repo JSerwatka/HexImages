@@ -1,8 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import Image, Plan, User, Customer
-
+from .models import (
+    Image, 
+    Plan, 
+    User, 
+    Customer,
+    ExpiringLink
+)
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
@@ -22,3 +27,8 @@ class CustomerInline(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = (CustomerInline,)
     list_display = ('username', 'email', 'customer', 'is_staff')
+
+
+@admin.register(ExpiringLink)
+class ExpiringLinkAdmin(admin.ModelAdmin):
+    list_display = ('id', 'image', 'img_height', 'original_img', 'expires_on')

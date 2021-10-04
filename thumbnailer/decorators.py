@@ -37,6 +37,12 @@ def test_img_parameters(view):
         available_heights = [int(str_height) for str_height in customer_plan.img_heights.split(',')]
         original_requested = customer_plan.original_exists and not request.GET.get('height')
 
+        # Set additional data for the view
+        wrapper.requested_height = None
+        wrapper.customer_plan = customer_plan
+        wrapper.original_img = original_img
+        wrapper.original_requested = original_requested
+
         # Get requested height if resizing needed
         if not original_requested:
             # Make sure image height query parameter is correct
@@ -48,11 +54,6 @@ def test_img_parameters(view):
 
             if requested_height not in available_heights:
                 return JsonResponse({'error': 'This plan does not support provided image height'})
-
-
-        wrapper.customer_plan = customer_plan
-        wrapper.original_img = original_img
-        wrapper.original_requested = original_requested
         
         return view(request, *args, **kwargs)
     return wrapper

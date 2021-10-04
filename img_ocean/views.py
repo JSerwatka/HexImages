@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from django.http.response import JsonResponse
+from django.http.response import HttpResponse, JsonResponse
 from rest_framework import viewsets
 from rest_framework import permissions
 from django.utils.datastructures import MultiValueDictKeyError
@@ -65,9 +65,9 @@ def generate_expiring_link(request):
     new_link = ExpiringLink.objects.create(
         image = img, 
         img_height = requested_height,
-        original_img = True, 
+        original_img = generate_expiring_link.original_requested, 
         expires_on = expiration_date
     )
 
-    return JsonResponse({'generated link': reverse('thumbnailer:expiring', kwargs={'uuid': new_link.id})})
-    
+    expirng_link_url  = reverse('thumbnailer:expiring_link', kwargs={'uuid': new_link.id})
+    return JsonResponse({'generated link': request.build_absolute_uri(expirng_link_url)})

@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -53,5 +55,8 @@ class Customer(models.Model):
 
 
 class ExpiringLink(models.Model):
-    url_hash = models.CharField(_('url hash'), max_length=32, unique=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE)
+    img_height = models.IntegerField(_('image height'), default=0)
+    original_img = models.BooleanField(_('original image height?'), default=False)
     expires_on = models.DateTimeField(_('expires on')) #TODO add expiration date

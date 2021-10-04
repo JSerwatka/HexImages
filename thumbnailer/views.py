@@ -18,12 +18,12 @@ def resize(request):
     '''
 
 
-    original_img_url = resize.original_img_url
+    original_img = resize.original_img
     original_requested = resize.original_requested
 
     # Get the img
     output = io.BytesIO()
-    img = PIL.Image.open(original_img_url)
+    img = PIL.Image.open(original_img.image.path) #TODO change path to url
     # Check format - JPG or PNG
     format = img.format
 

@@ -15,18 +15,18 @@ def test_img_parameters(view):
     if img height is available in the user's plan.
     
     Stores additional data in the wrapped view:
-        original_img_url: url of the original img
+        original_img: requested image resource
         original_requested: whether the user requested for the original img
         requested_height: height of the requested img
+        customer_plan: Plan object of the user
     """
 
-    
+
     @wraps(view)
     def wrapper(request, *args, **kwargs):
         # Make sure image id query parameter is correct
         try:
-            #TODO change path to url
-            original_img_url = Image.objects.get(id=request.GET['id'], owner=request.user).image.path
+            original_img = Image.objects.get(id=request.GET['id'], owner=request.user)
         except MultiValueDictKeyError:
             return JsonResponse({'error': 'Incorrect URL parameters'})
         except Image.DoesNotExist:
@@ -50,7 +50,8 @@ def test_img_parameters(view):
                 return JsonResponse({'error': 'This plan does not support provided image height'})
 
 
-        wrapper.original_img_url = original_img_url
+        wrapper.customer_plan = customer_plan
+        wrapper.original_img = original_img
         wrapper.original_requested = original_requested
         
         return view(request, *args, **kwargs)

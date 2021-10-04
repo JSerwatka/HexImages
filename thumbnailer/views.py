@@ -7,45 +7,29 @@ from django.utils.datastructures import MultiValueDictKeyError
 import PIL.Image
 
 from img_ocean.models import Image
+from .decorators import test_img_parameters
+from .utils import resize_img_to_height
 
 
+@test_img_parameters
 def resize(request):
-    # Make sure image id query parameter is correct
-    try:
-        #TODO change path to url
-        original_img_url = Image.objects.get(id=request.GET['id'], owner=request.user).image.path
-    except MultiValueDictKeyError:
-        return JsonResponse({'error': 'Incorrect URL parameters'})
-    except Image.DoesNotExist:
-        return JsonResponse({'error': 'Image with this id does not exist or you are not authorized to view it'})
-    
-    # Get customer's plan restriction
-    customer_plan = request.user.customer.plan
-    available_heights = [int(str_height) for str_height in customer_plan.img_heights.split(',')]
+    '''
+    #TODO docstring resize
+    '''
+
+
+    original_img_url = resize.original_img_url
+    original_requested = resize.original_requested
 
     # Get the img
     output = io.BytesIO()
     img = PIL.Image.open(original_img_url)
     # Check format - JPG or PNG
-    format = img.format 
+    format = img.format
 
-    # Do not resize if original requested
-    if not(customer_plan.original_exists and not request.GET.get('height')):
-        # Make sure image height query parameter is correct
-        try:    
-            requested_height = int(request.GET['height'])
-        except MultiValueDictKeyError:
-            return JsonResponse({'error': 'This plan does not support original images'})
-
-        if requested_height not in available_heights:
-            return JsonResponse({'error': 'This plan does not support provided image height'})
-
-        # --- Resize the image ---
-        # Calculate width based on fixed height
-        hpercent = (requested_height / float(img.size[1]))
-        wsize = int((float(img.size[0]) * float(hpercent)))
-        # Resize image and save in a file object
-        img = img.resize((wsize, requested_height), PIL.Image.LANCZOS)
+    if not original_requested:
+        requested_height = resize.requested_height
+        img = resize_img_to_height(img, requested_height)
 
     img.save(output, format)
     output.seek(0)

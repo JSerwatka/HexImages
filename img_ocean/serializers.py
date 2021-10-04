@@ -53,7 +53,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
             if customer_plan.expiring_exists:
                 #TODO change to real url
-                response_obj[f'image-expiring'] = request.build_absolute_uri('expiring')
+                response_obj[f'image-expiring'] = request.build_absolute_uri('/expiring')
         except:
             response_obj = {}
 

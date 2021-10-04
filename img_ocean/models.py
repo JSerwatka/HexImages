@@ -50,3 +50,8 @@ class Customer(models.Model):
 
     def __str__(self):
         return f'with plan {self.plan}'
+
+
+class ExpiringLink(models.Model):
+    url_hash = models.CharField(_('url hash'), max_length=32, unique=True)
+    expires_on = models.DateTimeField(_('expires on')) #TODO add expiration date

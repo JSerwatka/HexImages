@@ -1,24 +1,14 @@
 from datetime import datetime, timedelta
 
-from django.http.response import HttpResponse, JsonResponse
-from rest_framework import viewsets
-from rest_framework import permissions
+from django.http.response import JsonResponse
 from django.utils.datastructures import MultiValueDictKeyError
 from django.urls import reverse
+from rest_framework import viewsets, permissions
+
+from .serializers import ImageSerializer
+from .models import ExpiringLink, Image
 
 from thumbnailer.decorators import test_img_parameters
-
-from .serializers import UserSerializer, ImageSerializer
-from .models import ExpiringLink, Image, User
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class ImageViewSet(viewsets.ModelViewSet):

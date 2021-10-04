@@ -1,13 +1,7 @@
 from django.urls import reverse
 from rest_framework import serializers
 
-from .models import Image, User
-
-
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ['url', 'username', 'email', 'groups']
+from .models import Image
 
 
 class ImageSerializer(serializers.ModelSerializer):  

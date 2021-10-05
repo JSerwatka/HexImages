@@ -12,14 +12,8 @@ from thumbnailer.decorators import test_img_parameters
 
 
 class ImageViewSet(viewsets.ModelViewSet):
-    #TODO update user is not authenticated error msg
     serializer_class = ImageSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-    # def list(self, request, *args, **kwargs):
-    #     response = super().list(request, *args, **kwargs)
-    #     print(response.data)
-    #     return response
 
     def get_queryset(self):
         return Image.objects.filter(owner=self.request.user)
@@ -33,13 +27,12 @@ class ImageViewSet(viewsets.ModelViewSet):
 
 
 @test_img_parameters
-def generate_expiring_link(request):
-    customer_plan = generate_expiring_link.customer_plan
-    img = generate_expiring_link.original_img
-    
-    if not customer_plan.expiring_exists:
+def generate_expiring_link(request):   
+    # Check if the customer has expiring links option in their plan
+    if not generate_expiring_link.customer_plan.expiring_exists:
         return JsonResponse({'error': 'This plan does not expiring link generation'})
     
+    # Validate time query parameter
     try:
         expiration_time = int(request.GET['time'])
     except MultiValueDictKeyError:
@@ -49,11 +42,11 @@ def generate_expiring_link(request):
         return JsonResponse({'error': 'Expiration time must be between 300 and 3000 seconds'})
 
     expiration_date = datetime.utcnow() + timedelta(seconds=expiration_time)
-    requested_height = generate_expiring_link.requested_height if generate_expiring_link.requested_height else 0 
+    requested_height = generate_expiring_link.requested_height if generate_expiring_link.requested_height else 0
 
     # Create new expiring link
     new_link = ExpiringLink.objects.create(
-        image = img, 
+        image = generate_expiring_link.original_img , 
         img_height = requested_height,
         original_img = generate_expiring_link.original_requested, 
         expires_on = expiration_date

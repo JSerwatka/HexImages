@@ -1,12 +1,11 @@
-from django.http.response import HttpResponse
 from django.urls import path
 
-from .views import resize, expiring_link
+from .views import ResizeImg, GetExpiringLink
 
 
 app_name = 'thumbnailer'
 
 urlpatterns = [
-    path('', resize, name='resize'),
-    path('/expiring-link/<str:uuid>', expiring_link, name='expiring_link')
+    path('', ResizeImg.as_view(), name='resize_img'),
+    path('/expiring-link/<str:uuid>', GetExpiringLink.as_view(), name='get_expiring_link')
 ]

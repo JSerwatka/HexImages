@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
 
-from django.http.response import JsonResponse
 from django.utils.datastructures import MultiValueDictKeyError
 from django.urls import reverse
 from rest_framework import viewsets, permissions
+from rest_framework.response import Response
 
 from .serializers import ImageSerializer
 from .models import ExpiringLink, Image
 
-from thumbnailer.decorators import test_img_parameters
+from thumbnailer.views import ImgParamValidationGenericAPI
 
 
 class ImageViewSet(viewsets.ModelViewSet):
@@ -19,34 +19,38 @@ class ImageViewSet(viewsets.ModelViewSet):
         return Image.objects.filter(owner=self.request.user)
 
 
-@test_img_parameters
-def generate_expiring_link(request):
-    '''
-    View creates new expiring link for an image based on "time" query parameter and returns this link
-    '''
-    # Check if the customer has expiring links option in their plan
-    if not generate_expiring_link.customer_plan.expiring_exists:
-        return JsonResponse({'error': 'This plan does not expiring link generation'})
-    
-    # Validate time query parameter
-    try:
-        expiration_time = int(request.GET['time'])
-    except MultiValueDictKeyError:
-        return JsonResponse({'error': 'Incorrect URL parameters'})
+class GenerateExpiringLink(ImgParamValidationGenericAPI):
+    def get(self, request):
+        '''
+        View creates new expiring link for an image based on "time" query parameter and returns this link
+        '''
+        # Validate params
+        self.validate_url_params(request)
 
-    if expiration_time < 300 or expiration_time > 3000:
-        return JsonResponse({'error': 'Expiration time must be between 300 and 3000 seconds'})
+        # Check if the customer has expiring links option in their plan
+        if not self.customer_plan.expiring_exists:
+            return Response({'error': 'This plan does not expiring link generation'})
+        
+        # Validate time query parameter
+        try:
+            expiration_time = int(request.GET['time'])
+        except MultiValueDictKeyError:
+            return Response({'error': 'Incorrect URL parameters'})
 
-    expiration_date = datetime.utcnow() + timedelta(seconds=expiration_time)
-    requested_height = generate_expiring_link.requested_height if generate_expiring_link.requested_height else 0
+        if expiration_time < 300 or expiration_time > 3000:
+            return Response({'error': 'Expiration time must be between 300 and 3000 seconds'})
 
-    # Create new expiring link
-    new_link = ExpiringLink.objects.create(
-        image = generate_expiring_link.original_img , 
-        img_height = requested_height,
-        original_img = generate_expiring_link.original_requested, 
-        expires_on = expiration_date
-    )
+        expiration_date = datetime.utcnow() + timedelta(seconds=expiration_time)
+        requested_height = self.requested_height if self.requested_height else 0
 
-    expirng_link_url  = reverse('thumbnailer:expiring_link', kwargs={'uuid': new_link.id})
-    return JsonResponse({'generated link': request.build_absolute_uri(expirng_link_url)})
+        # Create new expiring link
+        new_link = ExpiringLink.objects.create(
+            image = self.original_img , 
+            img_height = requested_height,
+            original_img = self.original_requested, 
+            expires_on = expiration_date
+        )
+
+        expirng_link_url  = reverse('thumbnailer:get_expiring_link', kwargs={'uuid': new_link.id})
+        
+        return Response({'generated link': request.build_absolute_uri(expirng_link_url)})

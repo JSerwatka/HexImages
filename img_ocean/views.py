@@ -18,13 +18,6 @@ class ImageViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Image.objects.filter(owner=self.request.user)
 
-    # TODO remove in production
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-
-    def perform_update(self, serializer):
-        serializer.save(owner=self.request.user)
-
 
 @test_img_parameters
 def generate_expiring_link(request):

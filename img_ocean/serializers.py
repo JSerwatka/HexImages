@@ -6,12 +6,10 @@ from .models import Image
 
 
 class ImageSerializer(serializers.ModelSerializer):  
-    #TODO use hidden field in production 
-    # owner = serializers.HiddenField(
-    #     default=serializers.CurrentUserDefault()
-    # )
+    owner = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
     image = serializers.ImageField(write_only=True)
-    owner = serializers.StringRelatedField(default=serializers.CurrentUserDefault())
     images = serializers.SerializerMethodField('get_images_urls')
 
     class Meta:

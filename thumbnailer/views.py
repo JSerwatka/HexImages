@@ -6,7 +6,7 @@ from img_ocean.models import ExpiringLink
 from .decorators import test_img_parameters
 from .utils import generate_new_img
 
-
+#TODO change to api views
 @test_img_parameters
 def resize(request):
     '''
@@ -29,7 +29,7 @@ def expiring_link(request, uuid):
 
 
     try:
-        link = ExpiringLink.objects.get(id=uuid, expires_on__gte=datetime.now())
+        link = ExpiringLink.objects.get(id=uuid, expires_on__gte=datetime.utcnow())
     except ExpiringLink.DoesNotExist:
         return JsonResponse({'error': 'This link is invalid or expired'})
 

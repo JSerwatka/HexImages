@@ -48,7 +48,7 @@ def generate_expiring_link(request):
     if expiration_time < 300 or expiration_time > 3000:
         return JsonResponse({'error': 'Expiration time must be between 300 and 3000 seconds'})
 
-    expiration_date = datetime.now() + timedelta(seconds=expiration_time)
+    expiration_date = datetime.utcnow() + timedelta(seconds=expiration_time)
     requested_height = generate_expiring_link.requested_height if generate_expiring_link.requested_height else 0 
 
     # Create new expiring link

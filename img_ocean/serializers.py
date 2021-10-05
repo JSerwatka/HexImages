@@ -11,7 +11,6 @@ class ImageSerializer(serializers.ModelSerializer):
     # )
     
     owner = serializers.StringRelatedField(default=serializers.CurrentUserDefault())
-
     images = serializers.SerializerMethodField('get_images_urls')
 
     class Meta:

@@ -1,6 +1,10 @@
 
 ### Getting Started
+#### Cloning
+1. Close the repo: `git clone https://github.com/JSerwatka/HexImages.git`
+2. Change directory: `cd HexImages`
 
+#### Running 
 1. Run the multi-container app: `docker-compose up`
 2. Run bash inside the django app container: `docker exec -it hex_images bash`
 3. Run migration: `python manage.py migrate`

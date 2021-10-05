@@ -25,7 +25,7 @@ def generate_new_img(original_img, original_requested, requested_height):
     '''
     # Get the img
     output = io.BytesIO()
-    img = PIL.Image.open(original_img.image.path) #TODO change path to url
+    img = PIL.Image.open(original_img.image.path) #TODO change path to url in production
     # Check format - JPG or PNG
     format = img.format
 

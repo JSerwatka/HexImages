@@ -19,31 +19,26 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ['owner', 'id', 'title', 'image', 'images']
 
     def get_images_urls(self, image):
-        #TODO remove try/except - debug for admin
-        try: 
-            #TODO cleanup
-            request = self.context.get('request')
-            image_id = image.id
-            customer_plan = image.owner.customer.plan
-            available_heights = customer_plan.img_heights.split(',')
+        request = self.context.get('request')
+        customer_plan = image.owner.customer.plan
+        available_heights = customer_plan.img_heights.split(',')
+        
+        resizer_url = reverse('thumbnailer:resize')
+        response_obj = {}
 
-            resizer_url = reverse('thumbnailer:resize')
-            response_obj = {}
+        # Generate image links based on the customer's plan
+        for height in available_heights:
+            query = f'?id={image.id}&height={height}'
+            response_obj[f'image-{height}px'] = request.build_absolute_uri(resizer_url + query)
 
-            for height in available_heights:
-                query = f'?id={image_id}&height={height}'
-                response_obj[f'image-{height}px'] = request.build_absolute_uri(resizer_url + query)
+        if customer_plan.original_exists:
+            query = f'?id={image.id}'
+            response_obj[f'image-original'] = request.build_absolute_uri(resizer_url + query)
 
-            if customer_plan.original_exists:
-                query = f'?id={image_id}'
-                response_obj[f'image-original'] = request.build_absolute_uri(resizer_url + query)
-
-            if customer_plan.expiring_exists:
-                expiring_link_url = reverse('img_ocean:generate_expiring_link')
-                query = f'?id={image_id}&height={height}&time=300'
-                response_obj[f'image-expiring'] = request.build_absolute_uri(expiring_link_url + query)
-        except:
-            response_obj = {}
+        if customer_plan.expiring_exists:
+            expiring_link_url = reverse('img_ocean:generate_expiring_link')
+            query = f'?id={image.id}&height={height}&time=300'
+            response_obj[f'image-expiring'] = request.build_absolute_uri(expiring_link_url + query)
 
 
-        return response_obj
+

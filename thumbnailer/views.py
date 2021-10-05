@@ -1,15 +1,20 @@
 from datetime import datetime
 
-from django.http.response import HttpResponse
+from django.core.exceptions import ValidationError
 from django.utils.datastructures import MultiValueDictKeyError
+from django.http.response import HttpResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from rest_framework import permissions
 
 from img_ocean.models import ExpiringLink, Image
+
 from .utils import generate_new_img
 
 
 class ImgParamValidationGenericAPI(GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def validate_url_params(self, request):
         """
         Validation method for views that checks
@@ -26,15 +31,14 @@ class ImgParamValidationGenericAPI(GenericAPIView):
         try:
             original_img = Image.objects.get(id=request.query_params['id'], owner=request.user)
         except MultiValueDictKeyError:
-            return Response({'error': 'Incorrect URL parameters'})
+            raise ValidationError('Incorrect URL parameters')
         except Image.DoesNotExist:
-            return Response({'error': 'Image with this id does not exist or you are not authorized to view it'})
+            raise ValidationError('Image with this id does not exist or you are not authorized to view it')
         
         # Get customer's plan restriction
         customer_plan = request.user.customer.plan
         available_heights = [int(str_height) for str_height in customer_plan.img_heights.split(',')]
         original_requested = customer_plan.original_exists and not request.query_params.get('height')
-
         # Set additional data for the view
         self.requested_height = None
         self.customer_plan = customer_plan
@@ -48,10 +52,9 @@ class ImgParamValidationGenericAPI(GenericAPIView):
                 requested_height = int(request.GET['height'])
                 self.requested_height = requested_height
             except MultiValueDictKeyError:
-                return Response({'error': 'This plan does not support original images'})
-
+                raise ValidationError('This plan does not support original images')
             if requested_height not in available_heights:
-                return Response({'error': 'This plan does not support provided image height'})
+                raise ValidationError('This plan does not support provided image height')
 
 
 class ResizeImg(ImgParamValidationGenericAPI):
@@ -61,7 +64,10 @@ class ResizeImg(ImgParamValidationGenericAPI):
         and returns HttpResponse of image/<img_format> content type
         '''
         # Validate params
-        self.validate_url_params(request)
+        try:
+            self.validate_url_params(request)
+        except ValidationError as e:
+            return Response({'error': e.message})
 
         new_img, format = generate_new_img(
             original_img = self.original_img,
@@ -82,6 +88,8 @@ class GetExpiringLink(GenericAPIView):
             link = ExpiringLink.objects.get(id=kwargs['uuid'], expires_on__gte=datetime.utcnow())
         except ExpiringLink.DoesNotExist:
             return Response({'error': 'This link is invalid or expired'})
+        except ValidationError:
+            return Response({'error': 'Invalid UUID'})
 
         new_img, format = generate_new_img(
             original_img = link.image,

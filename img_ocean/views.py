@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.utils.datastructures import MultiValueDictKeyError
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
@@ -25,7 +26,10 @@ class GenerateExpiringLink(ImgParamValidationGenericAPI):
         View creates new expiring link for an image based on "time" query parameter and returns this link
         '''
         # Validate params
-        self.validate_url_params(request)
+        try:
+            self.validate_url_params(request)
+        except ValidationError as e:
+            return Response({'error': e.message})
 
         # Check if the customer has expiring links option in their plan
         if not self.customer_plan.expiring_exists:

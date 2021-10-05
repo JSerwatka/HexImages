@@ -10,14 +10,18 @@ class ImageSerializer(serializers.ModelSerializer):
     # owner = serializers.HiddenField(
     #     default=serializers.CurrentUserDefault()
     # )
-    
+    image = serializers.ImageField(write_only=True)
     owner = serializers.StringRelatedField(default=serializers.CurrentUserDefault())
     images = serializers.SerializerMethodField('get_images_urls')
 
     class Meta:
         model = Image
-        #TODO hide image in response, but leave POST panel
         fields = ['owner', 'id', 'title', 'image', 'images']
+
+    def validate_image(self, value):
+        if value.content_type not in ['image/jpg', 'image/png']:
+            raise serializers.ValidationError('Invalid extension, only JPG and PNG are supported') 
+        return value
 
     def get_images_urls(self, image):
         request = self.context.get('request')

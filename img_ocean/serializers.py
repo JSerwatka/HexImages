@@ -1,3 +1,4 @@
+from django.http.response import JsonResponse
 from django.urls import reverse
 from rest_framework import serializers
 
@@ -25,7 +26,7 @@ class ImageSerializer(serializers.ModelSerializer):
         
         resizer_url = reverse('thumbnailer:resize')
         response_obj = {}
-
+        
         # Generate image links based on the customer's plan
         for height in available_heights:
             query = f'?id={image.id}&height={height}'
@@ -41,4 +42,4 @@ class ImageSerializer(serializers.ModelSerializer):
             response_obj[f'image-expiring'] = request.build_absolute_uri(expiring_link_url + query)
 
 
-
+        return response_obj

@@ -3,19 +3,17 @@ from functools import wraps
 from django.http.response import JsonResponse
 from django.utils.datastructures import MultiValueDictKeyError
 
-import PIL.Image
-
 from img_ocean.models import Image
 
 
 def test_img_parameters(view):
     """
-    Decorator for views that checks  #TODO better docstring
+    Decorator for views that checks
     if the requested img exists and 
-    if img height is available in the user's plan.
+    if the img height is available in the user's plan.
     
     Stores additional data in the wrapped view:
-        original_img: requested image resource
+        original_img: requested image object
         original_requested: whether the user requested for the original img
         requested_height: height of the requested img
         customer_plan: Plan object of the user

@@ -15,7 +15,9 @@ from .models import (
 
 
 class LinkAvailableFilter(SimpleListFilter):
-    '''#TODO docstring'''
+    '''
+    Filter based on whether it is an expired / available link
+    '''
     title = _('link available')
     parameter_name = 'available'
 
@@ -60,7 +62,9 @@ class ExpiringLinkAdmin(admin.ModelAdmin):
     list_filter = ('img_height', LinkAvailableFilter)
 
     def available(self, obj):
-        '''#TODO docstring'''
+        '''
+        Calculated admin field - check if link expired or not
+        '''
         return obj.expires_on > datetime.utcnow()
     
     available.boolean = True

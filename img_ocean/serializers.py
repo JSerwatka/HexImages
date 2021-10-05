@@ -17,7 +17,8 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ['owner', 'id', 'title', 'image', 'images']
 
     def validate_image(self, value):
-        if value.content_type not in ['image/jpg', 'image/png']:
+        print(value.content_type)
+        if value.content_type not in ['image/jpg', 'image/png', 'image/jpeg']:
             raise serializers.ValidationError('Invalid extension, only JPG and PNG are supported') 
         return value
 
@@ -26,7 +27,7 @@ class ImageSerializer(serializers.ModelSerializer):
         customer_plan = image.owner.customer.plan
         available_heights = customer_plan.img_heights.split(',')
         
-        resizer_url = reverse('thumbnailer:resize')
+        resizer_url = reverse('thumbnailer:resize_img')
         response_obj = {}
         
         # Generate image links based on the customer's plan

@@ -12,10 +12,8 @@ from .validators import positive_int_list_validator
 def img_path(instance, filename):
     return f'images/{filename}'
 
-#TODO add plan to User
 class User(AbstractUser):
     pass
-
 
 class Image(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='images')
@@ -26,9 +24,7 @@ class Image(models.Model):
     def __str__(self):
         return self.title
 
-    #TODO prevent filetypes different than PNG/JPG 
     class Meta:
-        #TODO handle constrain validation with proper message
         unique_together = ['owner', 'title']
 
 

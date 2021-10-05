@@ -27,7 +27,7 @@ class ImageViewSet(viewsets.ModelViewSet):
 
 
 @test_img_parameters
-def generate_expiring_link(request):   
+def generate_expiring_link(request):
     # Check if the customer has expiring links option in their plan
     if not generate_expiring_link.customer_plan.expiring_exists:
         return JsonResponse({'error': 'This plan does not expiring link generation'})

@@ -1,5 +1,9 @@
+from datetime import datetime
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.admin import SimpleListFilter
+from django.utils.translation import gettext_lazy as _
 
 from .models import (
     Image, 
@@ -8,6 +12,27 @@ from .models import (
     Customer,
     ExpiringLink
 )
+
+
+class LinkAvailableFilter(SimpleListFilter):
+    '''#TODO docstring'''
+    title = _('link available')
+    parameter_name = 'available'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', _('Yes')),
+            ('no', _('No'))
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.filter(expires_on__gt=datetime.utcnow())
+        elif self.value() == 'no':
+            return queryset.filter(expires_on__lt=datetime.utcnow())
+        else:
+            return queryset
+
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
@@ -31,4 +56,11 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(ExpiringLink)
 class ExpiringLinkAdmin(admin.ModelAdmin):
-    list_display = ('id', 'image', 'img_height', 'original_img', 'expires_on')
+    list_display = ('id', 'image', 'img_height', 'original_img', 'expires_on', 'available')
+    list_filter = ('img_height', LinkAvailableFilter)
+
+    def available(self, obj):
+        '''#TODO docstring'''
+        return obj.expires_on > datetime.utcnow()
+    
+    available.boolean = True
